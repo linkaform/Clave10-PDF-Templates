@@ -1,0 +1,37 @@
+<blockTableStyle id="general">
+    <blockValign value="TOP" start="0,0" stop="-1,-1"/>
+    <blockTopPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockBottomPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockLeftPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockRightPadding length="0" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<blockTableStyle id="first_table">
+    <blockValign value="TOP" start="0,0" stop="-1,-1"/>
+    <blockTopPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockBottomPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockLeftPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockRightPadding length="0" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<blockTableStyle id="fifth_table">
+    <blockValign value="TOP" start="0,0" stop="-1,-1"/>
+    <blockTopPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockBottomPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockLeftPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockRightPadding length="0" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<blockTableStyle id="linea_divisoria">
+    <lineStyle kind="LINEBELOW" start="0,0" stop="-1,-1" thickness="0.4" colorName="#000000" dash="1,2" />
+    <blockTopPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockBottomPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockLeftPadding length="0" start="0,0" stop="-1,-1"/>
+    <blockRightPadding length="0" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<paraStyle name="title" fontName="Montserrat-Regular" fontSize="5.5" alignment="left" textColor="#000000" leading="6.5"/>
+<paraStyle name="text" fontName="Montserrat-Bold" fontSize="7" alignment="left" textColor="#000000" leading="8"/>
+<paraStyle name="text_small" fontName="Montserrat-Bold" fontSize="6.5" alignment="left" textColor="#000000" leading="7.5"/>
+<paraStyle name="textII" fontName="Montserrat-Bold" fontSize="6" alignment="center" textColor="#000000" leading="7"/>
+<paraStyle name="centerPara" alignment="center" leading="7"/>

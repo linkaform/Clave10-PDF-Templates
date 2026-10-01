@@ -1,0 +1,25 @@
+<blockTableStyle id="general">
+</blockTableStyle>
+
+<blockTableStyle id="first_table">
+    <blockValign value="MIDDLE" start="0,0" stop="-1,-1"/>
+    <blockSpan start="0,0" stop="0,-1"/>
+</blockTableStyle>
+
+<blockTableStyle id="fifth_table">
+    <blockValign value="MIDDLE" start="0,0" stop="-1,-1"/>
+    <blockSpan start="-1,0" stop="-1,-2"/>
+</blockTableStyle>
+
+<blockTableStyle id="linea_divisoria">
+    <lineStyle kind="LINEBELOW" colorName="#BDBDBD" thickness="0.5" dash="2,2" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<blockTableStyle id="rounded_image_cell">
+</blockTableStyle>
+
+<paraStyle name="title" fontName="Montserrat-Regular" fontSize="18" alignment="left" textColor="#B0B0B0" leading="20"/>
+<paraStyle name="text_underline" fontName="Montserrat-Bold" fontSize="20" alignment="left" textColor="#000000" leading="20" underline="true" underlineWidth="0.5"/>
+<paraStyle name="text" fontName="Montserrat-Bold" fontSize="20" alignment="left" textColor="#000000" leading="20"/>
+<paraStyle name="textII" fontName="Montserrat-Bold" fontSize="16" alignment="center" textColor="#000000" leading="18"/>
+<paraStyle name="centerPara" alignment="center" leading="10"/>

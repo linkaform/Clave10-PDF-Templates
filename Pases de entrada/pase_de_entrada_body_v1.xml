@@ -1,0 +1,353 @@
+<?xml version="1.0"?>
+{% load PrintFields %}
+{% load set_var %}
+{% load custom_tags %}
+<document filename="Pase de Entrada"
+    xmlns:doc="http://namespaces.zope.org/rml/doc">
+    <pageInfo pageSize="(22cm, 28cm)" doc:example="" />
+    <docinit>
+        <registerTTFont faceName="Montserrat-Regular" fileName="/srv/backend.linkaform.com/infosync-api/backend/staticfiles/fonts/Montserrat-Regular.ttf" />
+        <registerTTFont faceName="Montserrat-Bold" fileName="/srv/backend.linkaform.com/infosync-api/backend/staticfiles/fonts/Montserrat-Bold.ttf" />
+        <registerTTFont faceName="Montserrat-BoldItalic" fileName="/srv/backend.linkaform.com/infosync-api/backend/staticfiles/fonts/Montserrat-BoldItalic.ttf" />
+    </docinit>
+    <template title="Pase de Entrada" author="LinkaForm">
+        <pageTemplate id="first" pagesize="22cm, 28cm">
+            <frame id="first" x1="1cm" y1="1cm" width="20cm" height="26cm"/>
+            <pageGraphics>
+                {% Header company_logo parent user form Template meta %}
+                {% Footer user form Template meta %}
+            </pageGraphics>
+        </pageTemplate>
+    </template>
+    <stylesheet>
+        {% autoescape on %}
+        {{ Template.style|safe }}
+        {% endautoescape %}
+    </stylesheet>
+    <story>
+        <spacer length="0.5cm" />
+
+        <!-- LOGO -->
+        {% if 'not-found' not in company_logo %}
+            {% set soter_logo = company_logo %}
+        {% else %}
+            {% set soter_logo = 'https://f001.backblazeb2.com/file/lkf-media/company_pictures/company_pic_10.png' %}
+        {% endif %}
+
+        <blockTable colWidths="4.5cm, 7cm, 4.5cm" style="general">
+            <tr>
+                <td></td>
+                <td>
+                    <imageAndFlowables imageName="{% get_thumbnail soter_logo %}" imageWidth="4cm" imageHeight="1.2cm" imageSide="left" imageLeftPadding="0.8cm" />
+                </td>
+                <td></td>
+            </tr>
+        </blockTable>
+
+        <spacer length="0.5cm" />
+
+        <!-- NOMBRE Y TIPO DE PASE -->
+        {% set pass_name = answers.662c2937108836dec6d92580 %}
+
+        {% set pass_type = '' %}
+        {% lkm_catalog_id 'configuracion_de_perfiles' answers as perfil %}
+        {% if perfil.661dc67e901906b7e9b73bac %}
+            {% set pass_type = perfil.661dc67e901906b7e9b73bac %}
+        {% else %}
+            {% set pass_type = 'No especificado' %}
+        {% endif %}
+
+        {% set pass_image = answers.66c4d5b6d1095c4ce8b2c42a %}
+        {% if pass_image|length > 0 %}
+            {% set pass_image = answers.66c4d5b6d1095c4ce8b2c42a.0.file_url %}
+        {% else %}
+            {% set pass_image = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-09-17T15:12:50.png' %}
+        {% endif %}
+
+        <blockTable colWidths="5cm, 12cm" style="first_table">
+            <tr>
+                <td style="rounded_image_cell">
+                    <imageAndFlowables imageName="{% get_thumbnail pass_image %}" imageWidth="4cm" imageHeight="4cm" imageSide="left" />
+                </td>
+                <td>
+                    <para style='title'>NOMBRE</para>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <para style='text'>{{ pass_name }}</para>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <para style='title'>TIPO DE PASE</para>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <para style='text'>{{ pass_type }}</para>
+                </td>
+            </tr>
+        </blockTable>
+
+        <spacer length="0.5cm" />
+
+        <!-- EMPRESA, UBICACION, VISITA A Y TEMA DE LA CITA -->
+        {% set pass_company = answers.66357d5e4f00f9018ce97ce9 %}
+        {% set pass_locations = answers.6834e34fa6242006acedda0f %}
+
+        {% set pass_visit = '' %}
+        {% if answers.663d4ba61b14fab90559ebb0|length > 0 %}
+            {% for visit in answers.663d4ba61b14fab90559ebb0 %}
+                {% lkm_catalog_id 'configuracion_areas_y_empleados' visit as visit_catalog %}
+                {% if visit_catalog.62c5ff407febce07043024dd %}
+                    {% if pass_visit != '' %}
+                        {% set pass_visit = pass_visit ~ ', ' ~ visit_catalog.62c5ff407febce07043024dd %}
+                    {% else %}
+                        {% set pass_visit = visit_catalog.62c5ff407febce07043024dd %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {% if pass_visit == '' %}
+            {% set pass_visit = 'No especificado' %}
+        {% endif %}
+
+        {% set pass_subject = answers.67329875978e6460083c5648 %}
+        {% if not pass_subject %}
+            {% set pass_subject = 'No especificado' %}
+        {% endif %}
+
+        <blockTable colWidths="17cm">
+            <tr>
+                <td>
+                    <para style='title'>EMPRESA</para>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <para style='text'>{{ pass_company }}</para>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <para style='title'>UBICACIÓN</para>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <para style='text_underline'>
+                        {% if pass_locations|length > 0 %}
+                            {% for location in pass_locations %}
+                                {% lkm_catalog_id 'ubicaciones' location as catalog_location %}
+                                {% if not catalog_location %}
+                                    {% lkm_catalog_id 'areas_de_las_ubicaciones' location as catalog_location %}
+                                {% endif %}
+                                {% if forloop.counter < 3 %}
+                                    {% set pass_location = catalog_location.663e5c57f5b8a7ce8211ed0b %}
+                                    {% set pass_latitude = catalog_location.663e5c8cf5b8a7ce8211ed0c.0.latitude %}
+                                    {% set pass_longitude = catalog_location.663e5c8cf5b8a7ce8211ed0c.0.longitude %}
+                                    <a href="https://www.google.com/maps?q={{ pass_latitude }},{{ pass_longitude }}" color="#5dade2">{{ pass_location }}</a>{% if forloop.counter == 1 %}{% if pass_locations|length > 1 %},{% endif %}{% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if pass_locations|length > 2 %} +{{ pass_locations|length|add:"-2" }}{% endif %}
+                        {% else %}
+                            No especificadas
+                        {% endif %}
+                    </para>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <para style='title'>VISITA A</para>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <para style='text'>{{ pass_visit }}</para>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <para style='title'>TEMA DE LA CITA</para>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <para style='text'>{{ pass_subject|truncatechars:33 }}</para>
+                </td>
+            </tr>
+        </blockTable>
+
+        <spacer length="0.3cm" />
+
+        <!-- DIAS DISPONIBLES (SOLO PARA RANGO DE FECHAS) -->
+        {% set tipo_visita = answers.662c304fad7432d296d92581 %}
+
+        {% if tipo_visita == 'Rango de fechas' %}
+            <blockTable colWidths="17cm">
+                <tr>
+                    <td>
+                        <para style="title">DÍAS DISPONIBLES</para>
+                    </td>
+                </tr>
+            </blockTable>
+
+            {% if answers.662c304fad7432d296d92584 == 'Limitar días de acceso' %}
+                {% set lunes = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:03:56_1.png' %}
+                {% set martes = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:01_2.png' %}
+                {% set miercoles = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:01_2.png' %}
+                {% set jueves = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:05_3.png' %}
+                {% set viernes = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:10_4.png' %}
+                {% set sabado = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:16_5.png' %}
+                {% set domingo = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:22_6.png' %}
+
+                {% for item in answers.662c304fad7432d296d92585 %}
+                    {% if item == 'Lunes' %}
+                        {% set lunes = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:42_9.png' %}
+                    {% elif item == 'Martes' %}
+                        {% set martes = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:05:06.png' %}
+                    {% elif item == 'Miércoles' %}
+                        {% set miercoles = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:05:06.png' %}
+                    {% elif item == 'Jueves' %}
+                        {% set jueves = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:36_8.png' %}
+                    {% elif item == 'Viernes' %}
+                        {% set viernes = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:05:16_2.png' %}
+                    {% elif item == 'Sábado' %}
+                        {% set sabado = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:05:11_1.png' %}
+                    {% elif item == 'Domingo' %}
+                        {% set domingo = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-07-14T08:04:29_7.png' %}
+                    {% endif %}
+                {% endfor %}
+
+                <blockTable colWidths="2.14cm, 0.01cm, 2.14cm, 0.01cm, 2.14cm, 0.01cm, 2.14cm, 0.01cm, 2.14cm, 0.01cm, 2.14cm, 0.01cm, 4.14cm">
+                    <tr>
+                        <td><imageAndFlowables imageName="{% get_thumbnail lunes %}" imageWidth="1.4cm" imageHeight="1.4cm" imageSide="left" /></td>
+                        <td></td>
+                        <td><imageAndFlowables imageName="{% get_thumbnail martes %}" imageWidth="1.4cm" imageHeight="1.4cm" imageSide="left" /></td>
+                        <td></td>
+                        <td><imageAndFlowables imageName="{% get_thumbnail miercoles %}" imageWidth="1.4cm" imageHeight="1.4cm" imageSide="left" /></td>
+                        <td></td>
+                        <td><imageAndFlowables imageName="{% get_thumbnail jueves %}" imageWidth="1.4cm" imageHeight="1.4cm" imageSide="left" /></td>
+                        <td></td>
+                        <td><imageAndFlowables imageName="{% get_thumbnail viernes %}" imageWidth="1.4cm" imageHeight="1.4cm" imageSide="left" /></td>
+                        <td></td>
+                        <td><imageAndFlowables imageName="{% get_thumbnail sabado %}" imageWidth="1.4cm" imageHeight="1.4cm" imageSide="left" /></td>
+                        <td></td>
+                        <td><imageAndFlowables imageName="{% get_thumbnail domingo %}" imageWidth="1.4cm" imageHeight="1.4cm" imageSide="left" /></td>
+                    </tr>
+                </blockTable>
+            {% else %}
+                <blockTable colWidths="17cm">
+                    <tr>
+                        <td>
+                            <para style="text">Cualquier día</para>
+                        </td>
+                    </tr>
+                </blockTable>
+            {% endif %}
+        {% endif %}
+
+        <!-- LINEA DIVISORIA -->
+        <spacer length="0.3cm" />
+        <blockTable colWidths="17cm" style="linea_divisoria">
+            <tr>
+                <td></td>
+            </tr>
+        </blockTable>
+        <spacer length="1cm" />
+
+        <!-- VIGENCIA Y QR -->
+        {% set pass_qr = answers.64ef5b5fff1bec97d2ca27b6 %}
+        {% if pass_qr|length > 0 %}
+            {% set pass_qr = answers.64ef5b5fff1bec97d2ca27b6.0.file_url %}
+        {% else %}
+            {% set pass_qr = 'https://f001.backblazeb2.com/file/app-linkaform/public-client-126/68600/6076166dfd84fa7ea446b917/2025-05-12T08:19:51.png' %}
+        {% endif %}
+        {% set pass_from = answers.662c304fad7432d296d92582 %}
+        {% set pass_to = answers.662c304fad7432d296d92583 %}
+        {% if not pass_to %}
+            {% set pass_to = answers.662c304fad7432d296d92582 %}
+        {% endif %}
+        {% set pass_qty_access = answers.6635380dc9b3e7db4d59eb49 %}
+
+        <blockTable colWidths="12cm, 5cm" style="fifth_table">
+            {% if tipo_visita == 'Fecha fija' %}
+                <tr>
+                    <td>
+                        <para style="title">VIGENCIA DE INGRESO</para>
+                    </td>
+                    <td>
+                        <imageAndFlowables imageName="{% get_thumbnail pass_qr %}" imageWidth="10cm" imageHeight="10cm" imageSide="left" imageRightPadding="1cm" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style='text'>{% set_date_format pass_from "%d/%m/%Y %I:%M %p" "%Y-%m-%d %H:%M:%S" %}</para>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style="title">ACCESOS PERMITIDOS</para>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style='text'>{{ pass_qty_access }} acceso(s)</para>
+                    </td>
+                    <td>
+                        <para style='textII'>{{ meta.folio }}</para>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>
+                        <para style="title">VÁLIDO DEL</para>
+                    </td>
+                    <td>
+                        <imageAndFlowables imageName="{% get_thumbnail pass_qr %}" imageWidth="10cm" imageHeight="10cm" imageSide="left" imageRightPadding="1cm" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style='text'>{% set_date_format pass_from "%d/%m/%Y %I:%M %p" "%Y-%m-%d %H:%M:%S" %}</para>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style="title">HASTA</para>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style='text'>{% set_date_format pass_to "%d/%m/%Y %I:%M %p" "%Y-%m-%d %H:%M:%S" %}</para>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style="title">ACCESOS PERMITIDOS</para>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <para style='text'>{{ pass_qty_access }} acceso(s)</para>
+                    </td>
+                    <td>
+                        <para style='textII'>{{ meta.folio }}</para>
+                    </td>
+                </tr>
+            {% endif %}
+        </blockTable>
+
+    </story>
+</document>
