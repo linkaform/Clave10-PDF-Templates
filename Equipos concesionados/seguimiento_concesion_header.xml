@@ -1,0 +1,8 @@
+<!-- Título centrado -->
+<fill color="#111827"/>
+<setFont name="Helvetica-Bold" size="16"/>
+<drawCentredString x="10.5cm" y="27.62cm">Seguimiento de concesión</drawCentredString>
+
+<stroke color="#1F2937"/>
+<lineMode width="0.8"/>
+<lines>1.3cm 27.25cm 19.7cm 27.25cm</lines>

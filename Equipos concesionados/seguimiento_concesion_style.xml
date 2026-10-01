@@ -1,0 +1,146 @@
+<!-- ESTILOS DE TABLA -->
+<!-- Tarjetas KPI: columnas 0, 2 y 4 son tarjetas; 1 y 3 son separadores vacíos -->
+<blockTableStyle id="KpiTarjetas">
+ <blockValign value="TOP"/>
+ <blockBackground colorName="#EEF4FD" start="0,0" stop="0,-1"/>
+ <lineStyle kind="BOX" colorName="#BFD3F2" thickness="0.6" start="0,0" stop="0,-1"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="2,0" stop="2,-1"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="4,0" stop="4,-1"/>
+</blockTableStyle>
+
+<!-- Información del préstamo: firma e identificación ocupan 2 filas, comentarios ocupan todo el ancho -->
+<blockTableStyle id="InfoPrestamo">
+ <blockValign value="TOP"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,-1"/>
+ <lineStyle kind="LINEABOVE" colorName="#DDE3EA" thickness="0.6" start="0,2" stop="-1,2"/>
+ <blockSpan start="2,0" stop="2,1"/>
+ <blockSpan start="3,0" stop="3,1"/>
+ <blockSpan start="0,2" stop="3,2"/>
+</blockTableStyle>
+
+<!-- Logo a la izquierda y folio a la derecha (sin bordes ni fondo) -->
+<blockTableStyle id="LogoFolioTabla">
+ <blockValign value="TOP"/>
+ <blockAlignment value="LEFT" start="0,0" stop="0,0"/>
+ <blockAlignment value="RIGHT" start="2,0" stop="2,0"/>
+</blockTableStyle>
+
+<!-- Contenedor de una celda para ligar solo la imagen (sin bordes ni fondo) -->
+<blockTableStyle id="EnlaceImagen">
+ <blockAlignment value="CENTER"/>
+ <blockValign value="MIDDLE"/>
+</blockTableStyle>
+
+<!-- Barra azul con el número y nombre del equipo -->
+<blockTableStyle id="BarraEquipo">
+ <blockValign value="MIDDLE"/>
+ <blockBackground colorName="#1E3A6E" start="0,0" stop="-1,-1"/>
+ <lineStyle kind="BOX" colorName="#1E3A6E" thickness="0.6" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<!-- Detalle del equipo: fila de encabezados gris + fila de valores -->
+<blockTableStyle id="DetalleEquipo">
+ <blockValign value="MIDDLE"/>
+ <blockBackground colorName="#F5F7FA" start="0,0" stop="-1,0"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,-1"/>
+ <lineStyle kind="LINEBELOW" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,0"/>
+</blockTableStyle>
+
+<!-- Comentario del préstamo + fotos (equipo y préstamo) -->
+<blockTableStyle id="ComentarioFotos">
+ <blockValign value="TOP" start="0,0" stop="0,-1"/>
+ <blockValign value="MIDDLE" start="1,0" stop="2,-1"/>
+ <blockAlignment value="CENTER" start="1,0" stop="2,-1"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,-1"/>
+ <lineStyle kind="LINEBEFORE" colorName="#DDE3EA" thickness="0.6" start="1,0" stop="2,-1"/>
+</blockTableStyle>
+
+<!-- Barra gris "DEVOLUCIONES (N)" -->
+<blockTableStyle id="DevolucionesBarra">
+ <blockValign value="MIDDLE"/>
+ <blockBackground colorName="#EEF2F7" start="0,0" stop="-1,-1"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<!-- Tabla de devoluciones: fila 0 son encabezados (no se repiten al partirse de página) -->
+<blockTableStyle id="DevolucionesTabla">
+ <blockValign value="TOP"/>
+ <blockValign value="MIDDLE" start="0,0" stop="-1,0"/>
+ <blockValign value="MIDDLE" start="5,1" stop="6,-1"/>
+ <blockAlignment value="CENTER" start="5,1" stop="6,-1"/>
+ <blockBackground colorName="#F5F7FA" start="0,0" stop="-1,0"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,-1"/>
+ <lineStyle kind="LINEBELOW" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,-1"/>
+ <lineStyle kind="LINEBEFORE" colorName="#DDE3EA" thickness="0.6" start="5,1" stop="6,-1"/>
+</blockTableStyle>
+
+<!-- Caja simple para "Sin devoluciones registradas." -->
+<blockTableStyle id="SinDevoluciones">
+ <blockValign value="MIDDLE"/>
+ <lineStyle kind="BOX" colorName="#DDE3EA" thickness="0.6" start="0,0" stop="-1,-1"/>
+</blockTableStyle>
+
+<!-- Total concesionado al final del documento -->
+<blockTableStyle id="TotalConcesionado">
+ <blockValign value="MIDDLE"/>
+ <lineStyle kind="LINEABOVE" colorName="#1E3A6E" thickness="0.8" start="0,0" stop="-1,0"/>
+</blockTableStyle>
+
+<!-- ESTILOS DE PÁRRAFO -->
+<!-- Folio -->
+<paraStyle name="FolioEtiqueta" fontName="Helvetica" fontSize="6" leading="8" textColor="#8C97A8" alignment="RIGHT"/>
+<paraStyle name="FolioValor" fontName="Helvetica" fontSize="10.5" leading="13" textColor="#1E3A6E" alignment="RIGHT"/>
+
+<!-- Títulos de sección -->
+<paraStyle name="SeccionTitulo" fontName="Helvetica-Bold" fontSize="10.5" leading="13" textColor="#111827"/>
+
+<!-- Tarjetas KPI -->
+<paraStyle name="KpiEtiquetaAzul" fontName="Helvetica-Bold" fontSize="6" leading="8" textColor="#2563EB" spaceBefore="3"/>
+<paraStyle name="KpiEtiqueta" fontName="Helvetica" fontSize="6" leading="8" textColor="#8C97A8" spaceBefore="3"/>
+<paraStyle name="KpiValorAzul" fontName="Helvetica-Bold" fontSize="13" leading="16" textColor="#1E3A6E"/>
+<paraStyle name="KpiValor" fontName="Helvetica-Bold" fontSize="13" leading="16" textColor="#111827"/>
+<paraStyle name="KpiDetalleAzul" fontName="Helvetica" fontSize="7" leading="9" textColor="#5B6B85" spaceAfter="3"/>
+<paraStyle name="KpiDetalle" fontName="Helvetica" fontSize="7" leading="9" textColor="#8C97A8" spaceAfter="3"/>
+
+<!-- Campos de información (etiqueta gris, valor, nota) -->
+<paraStyle name="CampoEtiqueta" fontName="Helvetica" fontSize="6" leading="8" textColor="#8C97A8" spaceBefore="2"/>
+<paraStyle name="CampoValor" fontName="Helvetica" fontSize="8.5" leading="11" textColor="#111827"/>
+<paraStyle name="CampoNota" fontName="Helvetica" fontSize="7" leading="9" textColor="#8C97A8" spaceAfter="4"/>
+
+<!-- Textos por defecto cuando no hay dato -->
+<paraStyle name="SinComentarios" fontName="Helvetica" fontSize="7.5" leading="10" textColor="#8C97A8"/>
+<paraStyle name="SinImagen" fontName="Helvetica" fontSize="7" leading="9" textColor="#8C97A8" alignment="CENTER"/>
+<paraStyle name="SinImagenIzquierda" fontName="Helvetica" fontSize="7" leading="9" textColor="#8C97A8" alignment="LEFT"/>
+<paraStyle name="PieFoto" fontName="Helvetica" fontSize="6" leading="8" textColor="#8C97A8" alignment="CENTER"/>
+
+<!-- Barra de equipo y encabezados de columna -->
+<paraStyle name="BarraEquipoTexto" fontName="Helvetica-Bold" fontSize="9" leading="12" textColor="#FFFFFF"/>
+<paraStyle name="ColumnaEncabezado" fontName="Helvetica-Bold" fontSize="6" leading="8" textColor="#6B7788" alignment="CENTER"/>
+<paraStyle name="ColumnaEncabezadoIzquierda" fontName="Helvetica-Bold" fontSize="6" leading="8" textColor="#6B7788" alignment="LEFT"/>
+
+<!-- Celdas del detalle del equipo -->
+<paraStyle name="CeldaTexto" fontName="Helvetica" fontSize="8.5" leading="11" textColor="#111827" alignment="LEFT"/>
+<paraStyle name="CeldaCentro" fontName="Helvetica" fontSize="8.5" leading="11" textColor="#111827" alignment="CENTER"/>
+<paraStyle name="CeldaComentario" fontName="Helvetica" fontSize="7.5" leading="10" textColor="#111827"/>
+
+<!-- Estatus del equipo por color (el sufijo lo asigna el body: Neutro, Verde, Naranja, Rojo) -->
+<paraStyle name="EstatusEquipoNeutro" fontName="Helvetica-Bold" fontSize="8.5" leading="11" textColor="#111827"/>
+<paraStyle name="EstatusEquipoVerde" fontName="Helvetica-Bold" fontSize="8.5" leading="11" textColor="#15803D"/>
+<paraStyle name="EstatusEquipoNaranja" fontName="Helvetica-Bold" fontSize="8.5" leading="11" textColor="#C2410C"/>
+<paraStyle name="EstatusEquipoRojo" fontName="Helvetica-Bold" fontSize="8.5" leading="11" textColor="#B91C1C"/>
+
+<!-- Devoluciones -->
+<paraStyle name="DevolucionesTitulo" fontName="Helvetica-Bold" fontSize="7" leading="9" textColor="#1E3A6E"/>
+<paraStyle name="DevolucionTexto" fontName="Helvetica" fontSize="7.5" leading="10" textColor="#111827"/>
+<paraStyle name="DevolucionNota" fontName="Helvetica" fontSize="6.5" leading="9" textColor="#8C97A8"/>
+<paraStyle name="DevolucionUnidades" fontName="Helvetica-Bold" fontSize="7.5" leading="10" textColor="#111827" alignment="CENTER"/>
+
+<!-- Estatus de la devolución por color (mismo sufijo que el estatus del equipo) -->
+<paraStyle name="EstatusDevolucionNeutro" fontName="Helvetica-Bold" fontSize="7.5" leading="10" textColor="#111827"/>
+<paraStyle name="EstatusDevolucionVerde" fontName="Helvetica-Bold" fontSize="7.5" leading="10" textColor="#15803D"/>
+<paraStyle name="EstatusDevolucionNaranja" fontName="Helvetica-Bold" fontSize="7.5" leading="10" textColor="#C2410C"/>
+<paraStyle name="EstatusDevolucionRojo" fontName="Helvetica-Bold" fontSize="7.5" leading="10" textColor="#B91C1C"/>
+
+<!-- Total concesionado -->
+<paraStyle name="TotalEtiqueta" fontName="Helvetica-Bold" fontSize="8.5" leading="11" textColor="#111827"/>
+<paraStyle name="TotalValor" fontName="Helvetica-Bold" fontSize="11" leading="14" textColor="#1E3A6E" alignment="RIGHT"/>

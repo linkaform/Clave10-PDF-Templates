@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+{% load PrintFields %}
+{% load set_var %}
+{% load custom_tags %}
+<document filename="Seguimiento de concesion" xmlns:doc="http://namespaces.zope.org/rml/doc">
+    <template title="Seguimiento de concesión" author="LinkaForm">
+        <pageTemplate id="first">
+            <frame id="marco_primera_pagina" x1="1.3cm" y1="1.2cm" width="18.4cm" height="27.2cm"/>
+            <pageGraphics>
+                <setFont name="Helvetica" size="8"/>
+                {% Header company_logo parent user form Template meta %}
+                {% Footer user form Template meta %}
+            </pageGraphics>
+        </pageTemplate>
+        <pageTemplate id="paginas_siguientes">
+            <frame id="marco_paginas_siguientes" x1="1.3cm" y1="1.2cm" width="18.4cm" height="27.2cm"/>
+            <pageGraphics>
+                <setFont name="Helvetica" size="8"/>
+                {% Footer user form Template meta %}
+            </pageGraphics>
+        </pageTemplate>
+    </template>
+    <stylesheet>
+        {% autoescape on %}
+        {{ Template.style|safe }}
+        {% endautoescape %}
+    </stylesheet>
+    <story>
+        <setNextTemplate name="paginas_siguientes"/>
+
+        <!-- LOGO Y FOLIO -->
+        {% if 'not-found' not in company_logo %}
+            {% set logo_cuenta = company_logo %}
+        {% else %}
+            {% set logo_cuenta = 'https://f001.backblazeb2.com/file/lkf-media/company_pictures/company_pic_10.thumbnail' %}
+        {% endif %}
+        <blockTable colWidths="2.6cm,11.8cm,4cm" style="LogoFolioTabla">
+            <tr>
+                <td><imageAndFlowables imageName="{% get_thumbnail logo_cuenta %}" imageWidth="2.05cm" imageHeight="0.75cm" imageSide="left"/></td>
+                <td></td>
+                <td>
+                    <para style="FolioEtiqueta">FOLIO</para>
+                    <para style="FolioValor">
+                        <a href="https://app.linkaform.com/#/records/detail/{{ record.id }}" color="#1E3A6E">{{ meta.folio }}</a>
+                    </para>
+                </td>
+            </tr>
+        </blockTable>
+        <spacer length="0.45cm"/>
+
+        <!-- CÁLCULO DE TOTALES -->
+        {% set valor_concesionado = 0 %}
+        {% set unidades_prestadas_total = 0 %}
+        {% set unidades_devueltas_total = 0 %}
+        {% set unidades_pendientes_total = 0 %}
+        {% for equipo in answers.697991cb4298cbe60db6b883 %}
+            {% lkm_catalog_id 'activos_fijos' equipo as activo_fijo %}
+            <!-- Precio unitario del catálogo de equipos (puede venir como lista de 1 elemento) -->
+            {% set precio_unitario_total = '' %}
+            {% if activo_fijo.697991fffd83f49bb9fe074e %}
+                {% if activo_fijo.697991fffd83f49bb9fe074e|length == 1 %}
+                    {% set precio_unitario_total = activo_fijo.697991fffd83f49bb9fe074e.0 %}
+                {% else %}
+                    {% set precio_unitario_total = activo_fijo.697991fffd83f49bb9fe074e %}
+                {% endif %}
+            {% endif %}
+
+            <!-- Subtotal: por default precio x unidades; si el campo subtotal trae valor, gana el campo -->
+            {% set subtotal_total = 0 %}
+            {% if precio_unitario_total %}
+                {% if equipo.69799523aa75e6a4c99c4d3f %}
+                    {% widthratio precio_unitario_total 1 equipo.69799523aa75e6a4c99c4d3f as subtotal_calculado_total %}
+                    {% set subtotal_total = subtotal_calculado_total %}
+                {% endif %}
+            {% endif %}
+            {% if equipo.69799523aa75e6a4c99c4d40 %}
+                {% set subtotal_total = equipo.69799523aa75e6a4c99c4d40 %}
+            {% endif %}
+            {% if subtotal_total %}
+                {% add_total 'valor_concesionado' subtotal_total %}
+            {% endif %}
+
+            {% if equipo.69799523aa75e6a4c99c4d3f %}
+                {% add_total 'unidades_prestadas_total' equipo.69799523aa75e6a4c99c4d3f %}
+            {% endif %}
+            {% if equipo.6979962e6eac7e391dbb244e %}
+                {% add_total 'unidades_devueltas_total' equipo.6979962e6eac7e391dbb244e %}
+            {% endif %}
+            {% if equipo.699fe2e679aaab897b504c65 %}
+                {% add_total 'unidades_pendientes_total' equipo.699fe2e679aaab897b504c65 %}
+            {% endif %}
+        {% endfor %}
+
+        <!-- TARJETAS KPI -->
+        <blockTable colWidths="5.9cm,0.35cm,5.9cm,0.35cm,5.9cm" style="KpiTarjetas">
+            <tr>
+                <td><para style="KpiEtiquetaAzul">VALOR CONCESIONADO</para></td>
+                <td></td>
+                <td><para style="KpiEtiqueta">ESTADO</para></td>
+                <td></td>
+                <td><para style="KpiEtiqueta">UNIDADES DEVUELTAS</para></td>
+            </tr>
+            <tr>
+                <td><para style="KpiValorAzul">${{ valor_concesionado|floatformat:2 }}</para></td>
+                <td></td>
+                <td><para style="KpiValor">{{ answers.66469e193e6a703350f2e029|capfirst }}</para></td>
+                <td></td>
+                <td><para style="KpiValor">{{ unidades_devueltas_total|floatformat }} / {{ unidades_prestadas_total|floatformat }}</para></td>
+            </tr>
+            <tr>
+                <td><para style="KpiDetalleAzul">MXN · {{ answers.697991cb4298cbe60db6b883|length }} equipos</para></td>
+                <td></td>
+                <td><para style="KpiDetalle">{{ unidades_pendientes_total|floatformat }} pendientes</para></td>
+                <td></td>
+                <td><para style="KpiDetalle">{{ unidades_pendientes_total|floatformat }} pendientes</para></td>
+            </tr>
+        </blockTable>
+        <spacer length="0.5cm"/>
+
+        <!-- INFORMACIÓN DEL PRÉSTAMO -->
+        <!-- Solicitante: por default el nombre de texto libre (Otro); si el catálogo de empleado trae valor, gana el catálogo -->
+        {% set nombre_solicitante = '' %}
+        {% if answers.696fd2291527668d067cdb85 %}
+            {% set nombre_solicitante = answers.696fd2291527668d067cdb85 %}
+        {% endif %}
+        {% lkm_catalog_id 'configuracion_areas_y_empleados' answers as empleado_solicitante %}
+        {% if empleado_solicitante.62c5ff407febce07043024dd %}
+            {% if empleado_solicitante.62c5ff407febce07043024dd|length == 1 %}
+                {% set nombre_solicitante = empleado_solicitante.62c5ff407febce07043024dd.0 %}
+            {% else %}
+                {% set nombre_solicitante = empleado_solicitante.62c5ff407febce07043024dd %}
+            {% endif %}
+        {% endif %}
+
+        <!-- Ubicación y área (mismo catálogo) -->
+        {% lkm_catalog_id 'areas_de_las_ubicaciones' answers as ubicacion_catalogo %}
+        {% set ubicacion_prestamo = '' %}
+        {% if ubicacion_catalogo.663e5c57f5b8a7ce8211ed0b %}
+            {% if ubicacion_catalogo.663e5c57f5b8a7ce8211ed0b|length == 1 %}
+                {% set ubicacion_prestamo = ubicacion_catalogo.663e5c57f5b8a7ce8211ed0b.0 %}
+            {% else %}
+                {% set ubicacion_prestamo = ubicacion_catalogo.663e5c57f5b8a7ce8211ed0b %}
+            {% endif %}
+        {% endif %}
+
+        <!-- Área -->
+        {% set area_prestamo = '' %}
+        {% if ubicacion_catalogo.663e5d44f5b8a7ce8211ed0f %}
+            {% if ubicacion_catalogo.663e5d44f5b8a7ce8211ed0f|length == 1 %}
+                {% set area_prestamo = ubicacion_catalogo.663e5d44f5b8a7ce8211ed0f.0 %}
+            {% else %}
+                {% set area_prestamo = ubicacion_catalogo.663e5d44f5b8a7ce8211ed0f %}
+            {% endif %}
+        {% endif %}
+
+        <!-- Firma del solicitante: acepta imagen suelta o lista (se toma la primera) -->
+        {% set url_firma_solicitante = '' %}
+        {% if answers.6979b0b4a2a5a141dfef9cc5.file_url %}
+            {% set url_firma_solicitante = answers.6979b0b4a2a5a141dfef9cc5.file_url %}
+        {% endif %}
+        {% if answers.6979b0b4a2a5a141dfef9cc5.0.file_url %}
+            {% set url_firma_solicitante = answers.6979b0b4a2a5a141dfef9cc5.0.file_url %}
+        {% endif %}
+
+        <!-- Identificación del solicitante: acepta imagen suelta o lista (se toma la primera) -->
+        {% set url_identificacion_solicitante = '' %}
+        {% if answers.697991ad1cfb3b3210269902.file_url %}
+            {% set url_identificacion_solicitante = answers.697991ad1cfb3b3210269902.file_url %}
+        {% endif %}
+        {% if answers.697991ad1cfb3b3210269902.0.file_url %}
+            {% set url_identificacion_solicitante = answers.697991ad1cfb3b3210269902.0.file_url %}
+        {% endif %}
+
+        <para style="SeccionTitulo">Información del préstamo</para>
+        <spacer length="0.2cm"/>
+        <blockTable colWidths="6cm,5.2cm,3.6cm,3.6cm" style="InfoPrestamo">
+            <!-- Fila 0: solicitante, fecha, firma e identificación (estas dos ocupan 2 filas) -->
+            <tr>
+                <td>
+                    <para style="CampoEtiqueta">SOLICITANTE</para>
+                    <para style="CampoValor">{{ nombre_solicitante }}</para>
+                    <para style="CampoNota">{{ answers.66469e5a3e6a703350f2e03a|capfirst }}</para>
+                </td>
+                <td>
+                    <para style="CampoEtiqueta">FECHA Y HORA DEL PRÉSTAMO</para>
+                    <para style="CampoValor">{% set_date_format answers.66469ef8c9d58517f85d035f "%d/%m/%Y · %H:%M:%S" "%Y-%m-%d %H:%M:%S" %}</para>
+                </td>
+                <td>
+                    <para style="CampoEtiqueta">FIRMA DEL SOLICITANTE</para>
+                    <spacer length="0.1cm"/>
+                    {% if url_firma_solicitante %}
+                        <!-- Tabla de una sola celda para que la liga cubra solo la imagen -->
+                        <blockTable colWidths="3.2cm" style="EnlaceImagen">
+                            <tr><td href="{{ url_firma_solicitante }}"><imageAndFlowables imageName="{% get_thumbnail url_firma_solicitante %}" imageWidth="2.8cm" imageHeight="1.8cm" imageSide="left"/></td></tr>
+                        </blockTable>
+                    {% else %}
+                        <para style="SinImagenIzquierda">Sin imagen</para>
+                    {% endif %}
+                </td>
+                <td>
+                    <para style="CampoEtiqueta">IDENTIFICACIÓN</para>
+                    <spacer length="0.1cm"/>
+                    {% if url_identificacion_solicitante %}
+                        <!-- Tabla de una sola celda para que la liga cubra solo la imagen -->
+                        <blockTable colWidths="3.2cm" style="EnlaceImagen">
+                            <tr><td href="{{ url_identificacion_solicitante }}"><imageAndFlowables imageName="{% get_thumbnail url_identificacion_solicitante %}" imageWidth="2.8cm" imageHeight="1.8cm" imageSide="left"/></td></tr>
+                        </blockTable>
+                    {% else %}
+                        <para style="SinImagenIzquierda">Sin imagen</para>
+                    {% endif %}
+                </td>
+            </tr>
+            <!-- Fila 1: ubicación y área (columnas 2 y 3 quedan combinadas con la fila 0) -->
+            <tr>
+                <td>
+                    <para style="CampoEtiqueta">UBICACIÓN</para>
+                    <para style="CampoValor">{{ ubicacion_prestamo }}</para>
+                </td>
+                <td>
+                    <para style="CampoEtiqueta">ÁREA</para>
+                    <para style="CampoValor">{{ area_prestamo }}</para>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <!-- Fila 2: comentarios generales a todo lo ancho -->
+            <tr>
+                <td>
+                    <para style="CampoEtiqueta">COMENTARIOS GENERALES</para>
+                    {% if answers.66469f47c0580e5ead07e39a %}
+                        <para style="CampoValor">{{ answers.66469f47c0580e5ead07e39a }}</para>
+                    {% else %}
+                        <para style="SinComentarios">Sin comentarios.</para>
+                    {% endif %}
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </blockTable>
+        <spacer length="0.5cm"/>
+
+        <!-- SEGUIMIENTO POR EQUIPO -->
+        <condPageBreak height="6cm"/>
+        <para style="SeccionTitulo">Seguimiento por equipo</para>
+        <spacer length="0.2cm"/>
+
+        {% set numero_equipo = 0 %}
+        {% for equipo in answers.697991cb4298cbe60db6b883 %}
+            {% add_total 'numero_equipo' 1 %}
+
+            <!-- Datos del equipo que vienen del catálogo de equipos -->
+            {% lkm_catalog_id 'activos_fijos' equipo as activo_fijo %}
+            {% set nombre_equipo = '' %}
+            {% if activo_fijo.66c192ef89463aa27fc1818b %}
+                {% if activo_fijo.66c192ef89463aa27fc1818b|length == 1 %}
+                    {% set nombre_equipo = activo_fijo.66c192ef89463aa27fc1818b.0 %}
+                {% else %}
+                    {% set nombre_equipo = activo_fijo.66c192ef89463aa27fc1818b %}
+                {% endif %}
+            {% endif %}
+
+            {% set categoria_equipo = '' %}
+            {% if activo_fijo.66ce23efc5c4d148311adf86 %}
+                {% if activo_fijo.66ce23efc5c4d148311adf86|length == 1 %}
+                    {% set categoria_equipo = activo_fijo.66ce23efc5c4d148311adf86.0 %}
+                {% else %}
+                    {% set categoria_equipo = activo_fijo.66ce23efc5c4d148311adf86 %}
+                {% endif %}
+            {% endif %}
+
+            {% set precio_unitario = '' %}
+            {% if activo_fijo.697991fffd83f49bb9fe074e %}
+                {% if activo_fijo.697991fffd83f49bb9fe074e|length == 1 %}
+                    {% set precio_unitario = activo_fijo.697991fffd83f49bb9fe074e.0 %}
+                {% else %}
+                    {% set precio_unitario = activo_fijo.697991fffd83f49bb9fe074e %}
+                {% endif %}
+            {% endif %}
+
+            <!-- Subtotal: por default precio x unidades; si el campo subtotal trae valor, gana el campo -->
+            {% set subtotal_equipo = 0 %}
+            {% if precio_unitario %}
+                {% if equipo.69799523aa75e6a4c99c4d3f %}
+                    {% widthratio precio_unitario 1 equipo.69799523aa75e6a4c99c4d3f as subtotal_calculado %}
+                    {% set subtotal_equipo = subtotal_calculado %}
+                {% endif %}
+            {% endif %}
+            {% if equipo.69799523aa75e6a4c99c4d40 %}
+                {% set subtotal_equipo = equipo.69799523aa75e6a4c99c4d40 %}
+            {% endif %}
+
+            <!-- Foto del equipo (catálogo): acepta imagen suelta o lista, se toma la primera -->
+            {% set url_foto_equipo = '' %}
+            {% if activo_fijo.6646393c3fa8b818265d0326.file_url %}
+                {% set url_foto_equipo = activo_fijo.6646393c3fa8b818265d0326.file_url %}
+            {% endif %}
+            {% if activo_fijo.6646393c3fa8b818265d0326.0.file_url %}
+                {% set url_foto_equipo = activo_fijo.6646393c3fa8b818265d0326.0.file_url %}
+            {% endif %}
+
+            <!-- Evidencia del préstamo: se toma la primera imagen -->
+            {% set url_evidencia_prestamo = '' %}
+            {% if equipo.6ab5a7ffcd0d2b2a515bca05.file_url %}
+                {% set url_evidencia_prestamo = equipo.6ab5a7ffcd0d2b2a515bca05.file_url %}
+            {% endif %}
+            {% if equipo.6ab5a7ffcd0d2b2a515bca05.0.file_url %}
+                {% set url_evidencia_prestamo = equipo.6ab5a7ffcd0d2b2a515bca05.0.file_url %}
+            {% endif %}
+
+            <!-- Color del estatus del equipo (default neutro; los valores deben coincidir con lo guardado en la forma) -->
+            {% set color_estatus_equipo = 'Neutro' %}
+            {% if equipo.66469e193e6a703350f2e299|lower == 'completado' %}
+                {% set color_estatus_equipo = 'Verde' %}
+            {% endif %}
+            {% if equipo.66469e193e6a703350f2e299|lower == 'completo' %}
+                {% set color_estatus_equipo = 'Verde' %}
+            {% endif %}
+            {% if equipo.66469e193e6a703350f2e299|lower == 'devuelto' %}
+                {% set color_estatus_equipo = 'Verde' %}
+            {% endif %}
+            {% if equipo.66469e193e6a703350f2e299|lower == 'dañado' %}
+                {% set color_estatus_equipo = 'Naranja' %}
+            {% endif %}
+            {% if equipo.66469e193e6a703350f2e299|lower == 'perdido' %}
+                {% set color_estatus_equipo = 'Rojo' %}
+            {% endif %}
+
+            <!-- Conteo de devoluciones de este equipo (se ligan por id Movimiento) y altura estimada del bloque en mm -->
+            {% set devoluciones_equipo = 0 %}
+            {% set altura_bloque_equipo = 55 %}
+            {% for devolucion in answers.699fe58a0f178e858bbf1b91 %}
+                {% if devolucion.699fe63679aaab897b504c71 == equipo.697b055eb9a8d97bb5614ee0 %}
+                    {% add_total 'devoluciones_equipo' 1 %}
+                    {% add_total 'altura_bloque_equipo' 18 %}
+                {% endif %}
+            {% endfor %}
+
+            <!-- Si el equipo completo no cabe en lo que queda de la página, empieza en la siguiente -->
+            <condPageBreak height="{{ altura_bloque_equipo }}mm"/>
+
+            <!-- Barra azul: número y nombre del equipo -->
+            <blockTable colWidths="18.4cm" style="BarraEquipo">
+                <tr><td><para style="BarraEquipoTexto">{{ numero_equipo|floatformat }}. {{ nombre_equipo }}</para></td></tr>
+            </blockTable>
+
+            <!-- Detalle del equipo -->
+            <blockTable colWidths="3.4cm,2.2cm,2.4cm,2.4cm,2.2cm,2.2cm,3.6cm" style="DetalleEquipo">
+                <tr>
+                    <td><para style="ColumnaEncabezadoIzquierda">CATEGORÍA</para></td>
+                    <td><para style="ColumnaEncabezado">UNIDADES</para></td>
+                    <td><para style="ColumnaEncabezado">P. UNITARIO</para></td>
+                    <td><para style="ColumnaEncabezado">SUBTOTAL</para></td>
+                    <td><para style="ColumnaEncabezado">DEVUELTAS</para></td>
+                    <td><para style="ColumnaEncabezado">PENDIENTES</para></td>
+                    <td><para style="ColumnaEncabezadoIzquierda">ESTATUS</para></td>
+                </tr>
+                <tr>
+                    <td><para style="CeldaTexto">{{ categoria_equipo }}</para></td>
+                    <td><para style="CeldaCentro">{{ equipo.69799523aa75e6a4c99c4d3f|floatformat }}</para></td>
+                    <td><para style="CeldaCentro">${{ precio_unitario|floatformat:2 }}</para></td>
+                    <td><para style="CeldaCentro">${{ subtotal_equipo|floatformat:2 }}</para></td>
+                    <td><para style="CeldaCentro">{{ equipo.6979962e6eac7e391dbb244e|floatformat }}</para></td>
+                    <td><para style="CeldaCentro">{{ equipo.699fe2e679aaab897b504c65|floatformat }}</para></td>
+                    <td><para style="EstatusEquipo{{ color_estatus_equipo }}">{{ equipo.66469e193e6a703350f2e299|capfirst }}</para></td>
+                </tr>
+            </blockTable>
+
+            <!-- Comentario del préstamo + foto del equipo + evidencia del préstamo -->
+            <blockTable colWidths="13.6cm,2.4cm,2.4cm" rowHeights="1.9cm" style="ComentarioFotos">
+                <tr>
+                    <td>
+                        <para style="CampoEtiqueta">COMENTARIO DEL PRÉSTAMO</para>
+                        {% if equipo.6ab5a7ffcd0d2b2a515bca06 %}
+                            <para style="CeldaComentario">{{ equipo.6ab5a7ffcd0d2b2a515bca06 }}</para>
+                        {% else %}
+                            <para style="SinComentarios">Sin comentarios.</para>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if url_foto_equipo %}
+                            <!-- Tabla de una sola celda para que la liga cubra solo la imagen -->
+                            <blockTable colWidths="2.0cm" style="EnlaceImagen">
+                                <tr><td href="{{ url_foto_equipo }}"><imageAndFlowables imageName="{% get_thumbnail url_foto_equipo %}" imageWidth="1.6cm" imageHeight="1.1cm" imageSide="left"/></td></tr>
+                            </blockTable>
+                            <para style="PieFoto">Equipo</para>
+                        {% else %}
+                            <para style="SinImagen">Sin imagen</para>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if url_evidencia_prestamo %}
+                            <!-- Tabla de una sola celda para que la liga cubra solo la imagen -->
+                            <blockTable colWidths="2.0cm" style="EnlaceImagen">
+                                <tr><td href="{{ url_evidencia_prestamo }}"><imageAndFlowables imageName="{% get_thumbnail url_evidencia_prestamo %}" imageWidth="1.6cm" imageHeight="1.1cm" imageSide="left"/></td></tr>
+                            </blockTable>
+                            <para style="PieFoto">Préstamo</para>
+                        {% else %}
+                            <para style="SinImagen">Sin imagen</para>
+                        {% endif %}
+                    </td>
+                </tr>
+            </blockTable>
+
+            <!-- Barra de devoluciones con el número de sets de este equipo -->
+            <blockTable colWidths="18.4cm" style="DevolucionesBarra">
+                <tr><td><para style="DevolucionesTitulo">DEVOLUCIONES ({{ devoluciones_equipo|floatformat }})</para></td></tr>
+            </blockTable>
+
+            {% if devoluciones_equipo %}
+                <!-- Tabla de devoluciones: si se parte de página, continúa sin repetir encabezados -->
+                <blockTable colWidths="2.3cm,3.7cm,1.1cm,4.4cm,1.8cm,2.55cm,2.55cm" style="DevolucionesTabla">
+                    <tr>
+                        <td><para style="ColumnaEncabezadoIzquierda">FECHA</para></td>
+                        <td><para style="ColumnaEncabezadoIzquierda">DEVUELVE / EMPRESA</para></td>
+                        <td><para style="ColumnaEncabezado">UNID.</para></td>
+                        <td><para style="ColumnaEncabezadoIzquierda">COMENTARIO</para></td>
+                        <td><para style="ColumnaEncabezadoIzquierda">ESTATUS</para></td>
+                        <td><para style="ColumnaEncabezado">EVIDENCIA</para></td>
+                        <td><para style="ColumnaEncabezado">IDENTIF.</para></td>
+                    </tr>
+                    {% for devolucion in answers.699fe58a0f178e858bbf1b91 %}
+                        {% if devolucion.699fe63679aaab897b504c71 == equipo.697b055eb9a8d97bb5614ee0 %}
+
+                            <!-- Quien entrega: por default el nombre de texto libre (Otro); si el catálogo de empleado trae valor, gana el catálogo -->
+                            {% set nombre_entrega = '' %}
+                            {% if devolucion.6979962e6eac7e391dbb2451 %}
+                                {% set nombre_entrega = devolucion.6979962e6eac7e391dbb2451 %}
+                            {% endif %}
+                            {% lkm_catalog_id 'configuracion_areas_y_empleados' devolucion as empleado_entrega %}
+                            {% if empleado_entrega.62c5ff407febce07043024dd %}
+                                {% if empleado_entrega.62c5ff407febce07043024dd|length == 1 %}
+                                    {% set nombre_entrega = empleado_entrega.62c5ff407febce07043024dd.0 %}
+                                {% else %}
+                                    {% set nombre_entrega = empleado_entrega.62c5ff407febce07043024dd %}
+                                {% endif %}
+                            {% endif %}
+
+                            <!-- Evidencia de la devolución: se toma la primera imagen -->
+                            {% set url_evidencia_devolucion = '' %}
+                            {% if devolucion.6979962e6eac7e391dbb2453.file_url %}
+                                {% set url_evidencia_devolucion = devolucion.6979962e6eac7e391dbb2453.file_url %}
+                            {% endif %}
+                            {% if devolucion.6979962e6eac7e391dbb2453.0.file_url %}
+                                {% set url_evidencia_devolucion = devolucion.6979962e6eac7e391dbb2453.0.file_url %}
+                            {% endif %}
+
+                            <!-- Identificación de quien entrega: se toma la primera imagen -->
+                            {% set url_identificacion_entrega = '' %}
+                            {% if devolucion.6979962e6eac7e391dbb2452.file_url %}
+                                {% set url_identificacion_entrega = devolucion.6979962e6eac7e391dbb2452.file_url %}
+                            {% endif %}
+                            {% if devolucion.6979962e6eac7e391dbb2452.0.file_url %}
+                                {% set url_identificacion_entrega = devolucion.6979962e6eac7e391dbb2452.0.file_url %}
+                            {% endif %}
+
+                            <!-- Color del estatus de la devolución -->
+                            {% set color_estatus_devolucion = 'Neutro' %}
+                            {% if devolucion.6979962e6eac7e391dbb244f|lower == 'completo' %}
+                                {% set color_estatus_devolucion = 'Verde' %}
+                            {% endif %}
+                            {% if devolucion.6979962e6eac7e391dbb244f|lower == 'dañado' %}
+                                {% set color_estatus_devolucion = 'Naranja' %}
+                            {% endif %}
+                            {% if devolucion.6979962e6eac7e391dbb244f|lower == 'perdido' %}
+                                {% set color_estatus_devolucion = 'Rojo' %}
+                            {% endif %}
+
+                            <tr>
+                                <td>
+                                    <para style="DevolucionTexto">{% set_date_format devolucion.699fed207a15d39b937d805c "%d/%m/%Y" "%Y-%m-%d %H:%M:%S" %}</para>
+                                    <para style="DevolucionNota">{% set_date_format devolucion.699fed207a15d39b937d805c "%H:%M:%S" "%Y-%m-%d %H:%M:%S" %}</para>
+                                </td>
+                                <td>
+                                    <para style="DevolucionTexto">{{ nombre_entrega }}</para>
+                                    <para style="DevolucionNota">{{ devolucion.6979962e6eac7e391dbb2450|capfirst }}</para>
+                                </td>
+                                <td><para style="DevolucionUnidades">{{ devolucion.699fec1e0f178e858bbf1b92|floatformat }}</para></td>
+                                <td>
+                                    {% if devolucion.69799523aa75e6a4c99c4d41 %}
+                                        <para style="DevolucionTexto">{{ devolucion.69799523aa75e6a4c99c4d41 }}</para>
+                                    {% else %}
+                                        <para style="SinComentarios">Sin comentarios.</para>
+                                    {% endif %}
+                                </td>
+                                <td><para style="EstatusDevolucion{{ color_estatus_devolucion }}">{{ devolucion.6979962e6eac7e391dbb244f|capfirst }}</para></td>
+                                <td>
+                                    {% if url_evidencia_devolucion %}
+                                        <!-- Tabla de una sola celda para que la liga cubra solo la imagen -->
+                                        <blockTable colWidths="2.3cm" style="EnlaceImagen">
+                                            <tr><td href="{{ url_evidencia_devolucion }}"><imageAndFlowables imageName="{% get_thumbnail url_evidencia_devolucion %}" imageWidth="1.9cm" imageHeight="1.3cm" imageSide="left"/></td></tr>
+                                        </blockTable>
+                                    {% else %}
+                                        <para style="SinImagen">Sin imagen</para>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if url_identificacion_entrega %}
+                                        <!-- Tabla de una sola celda para que la liga cubra solo la imagen -->
+                                        <blockTable colWidths="2.3cm" style="EnlaceImagen">
+                                            <tr><td href="{{ url_identificacion_entrega }}"><imageAndFlowables imageName="{% get_thumbnail url_identificacion_entrega %}" imageWidth="1.9cm" imageHeight="1.3cm" imageSide="left"/></td></tr>
+                                        </blockTable>
+                                    {% else %}
+                                        <para style="SinImagen">Sin imagen</para>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </blockTable>
+            {% else %}
+                <!-- Equipo sin devoluciones registradas -->
+                <blockTable colWidths="18.4cm" style="SinDevoluciones">
+                    <tr><td><para style="SinComentarios">Sin devoluciones registradas.</para></td></tr>
+                </blockTable>
+            {% endif %}
+
+            <spacer length="0.5cm"/>
+        {% endfor %}
+
+        <!-- TOTAL CONCESIONADO -->
+        <condPageBreak height="1.5cm"/>
+        <blockTable colWidths="12.4cm,6cm" style="TotalConcesionado">
+            <tr>
+                <td><para style="TotalEtiqueta">Total concesionado</para></td>
+                <td><para style="TotalValor">${{ valor_concesionado|floatformat:2 }}</para></td>
+            </tr>
+        </blockTable>
+    </story>
+</document>
